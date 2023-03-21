@@ -19,16 +19,25 @@ const Tree = (arr) => {
     root: buildTree(arr),
 
     insert(value) {
-      if (this.root.length === 0) {
-        const newNode = Node(value);
-        this.root = newNode;
+      if (this.root === null || this.root.length === 0) {
+        this.root = Node(value);
+        return this.root;
       }
       if (value < this.root.value) {
-        this.root.left = this.insert(value);
+        if (this.root.left === null) {
+          this.root.left = Node(value);
+        } else {
+          this.root.left = this.insert(value);
+          return this.root;
+        }
       } else if (value > this.root.value) {
-        this.root.right = this.insert(value);
+        if (this.root.right === null) {
+          this.root.right = Node(value);
+        } else {
+          this.root.right = this.insert(value);
+          return this.root;
+        }
       }
-      return this.root;
     },
   };
 };
@@ -67,4 +76,5 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
 };
 
 let testArray = [1,2,5,3,4,8,7,6,9];
+let shortTree = Tree([1,2,3])
 let testTree = Tree(testArray);
