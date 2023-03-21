@@ -18,49 +18,85 @@ const Tree = (arr) => {
   return {
     root: buildTree(arr),
 
-    insert(value) {
-      if (this.root === null || this.root.length === 0) {
-        this.root = Node(value);
-        return this.root;
+    insert(value, currentNode = this.root) {
+      if (currentNode === null) return Node(value);
+      if (currentNode.value === value) return;
+      if (value < currentNode.value) {
+        currentNode.left = this.insert(value, currentNode.left);
+      } else if (value > currentNode.value) {
+        currentNode.right = this.insert(value, currentNode.right);
       }
-      if (value < this.root.value) {
-        if (this.root.left === null) {
-          this.root.left = Node(value);
-        } else {
-          this.root.left = this.insert(value);
-          return this.root;
+      return currentNode;
+    },
+
+    delete(value, currentNode = this.root) {
+      // Base case
+      if (currentNode === null) return currentNode;
+      // Traverse tree with recursion
+      if (value < currentNode.value) {
+        currentNode.left = this.delete(value, currentNode.left);
+      } else if (value > currentNode.value) {
+        currentNode.right = this.delete(value, currentNode.right);
+      } else { // value found in tree
+        if (currentNode.left === null) {
+          return currentNode.right;
+        } else if (currentNode.right === null) {
+          return currentNode.left;
         }
-      } else if (value > this.root.value) {
-        if (this.root.right === null) {
-          this.root.right = Node(value);
-        } else {
-          this.root.right = this.insert(value);
-          return this.root;
-        }
+        currentNode.value = this.minValue(currentNode.right);
+        currentNode.right = this.delete(currentNode.value, currentNode.right);
       }
+      return currentNode;
+    },
+
+    minValue(root) {
+      let minVal = root.value;
+      while (root.left != null) {
+        minVal = root.left.value;
+        root = root.left;
+      }
+      return minVal;
+    },
+
+    find(value, currentNode = this.root) {
+      if (currentNode === null) {
+        return 'Error: value not found.';
+      }
+      if (currentNode.value === value) {
+        return currentNode;
+      }
+      if (value < currentNode.value) {
+        currentNode = this.find(value, currentNode.left);
+      } else if (value > currentNode.value) {
+        currentNode = this.find(value, currentNode.right);
+      }
+      return currentNode;
     },
   };
 };
-
 
 function buildTree(arr) {
   // Remove duplicate values and sort them
   const cleanData = [...new Set(arr)];
   const sortedDatas = sortedArray(cleanData);
-  // base case
-  if (sortedDatas.length <= 1)
-    return sortedDatas; 
-  // diviser l'array en deux de manière récursive, en divisant l'array en gauche et droite
-  let start = 0;
-  let end = sortedDatas.length;
-  let mid = Math.floor((start + end) / 2);
-  let newNode = Node(buildTree(sortedDatas.splice(mid, 1)), buildTree(sortedDatas.splice(start, mid)), buildTree(sortedDatas.splice(-mid)));
-  /*let root = buildTree(arr.splice(mid, 1));
-  let leftTree = buildTree(arr.splice(start, mid));
-  let rightTree = buildTree(arr.splice(-mid));
-  return { leftTree, rightTree, root };*/
+  // Base case
+  if (sortedDatas.length === 0) {
+    return null;
+  }
+  // Recursion
+  const mid = Math.floor(sortedDatas.length / 2);
+  const newNode = Node(sortedDatas[mid]);
+  newNode.left = buildTree(sortedDatas.slice(0, mid));
+  newNode.right = buildTree(sortedDatas.slice(mid + 1));
   return newNode;
 }
+
+/* ----------------------------------------------------------------------------------------------*/
+
+let testArray = [1,2,5,3,4,8,7,6,9,42];
+let shortTree = Tree([1,2,3]);
+let testTree = Tree(testArray);
+
 
 const prettyPrint = (node, prefix = '', isLeft = true) => {
   if (node === null) {
@@ -74,7 +110,3 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
     prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
   }
 };
-
-let testArray = [1,2,5,3,4,8,7,6,9];
-let shortTree = Tree([1,2,3])
-let testTree = Tree(testArray);
