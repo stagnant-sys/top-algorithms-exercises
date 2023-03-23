@@ -14,6 +14,22 @@ const Node = (value = null, left = null, right = null) => {
   };
 };
 
+function buildTree(arr) {
+  // Remove duplicate values and sort them
+  const cleanData = [...new Set(arr)];
+  const sortedDatas = sortedArray(cleanData);
+  // Base case
+  if (sortedDatas.length === 0) {
+    return null;
+  }
+  // Recursion
+  const mid = Math.floor(sortedDatas.length / 2);
+  const newNode = Node(sortedDatas[mid]);
+  newNode.left = buildTree(sortedDatas.slice(0, mid));
+  newNode.right = buildTree(sortedDatas.slice(mid + 1));
+  return newNode;
+}
+
 const Tree = (arr) => {
   return {
     root: buildTree(arr),
@@ -152,29 +168,39 @@ const Tree = (arr) => {
         return this.depth(targetNode, currentNode, depth);
       }
     },
+
+    isBalanced(currentNode= this.root) {
+      if (currentNode === null) return;
+      
+      let leftHeight = this.height(currentNode.left);
+      let rightHeight = this.height(currentNode.right);
+      let heightDiff = Math.abs(leftHeight - rightHeight);
+      
+      if (heightDiff < 2) return `Balanced tree, maximum height difference is ${heightDiff}`;
+      return `Imbalanced tree, maximum height difference is ${heightDiff}`;
+    },
+
+    rebalance() {
+      // use inorder traversal to create new array from which to build a new tree
+      let updatedValuesArray = this.inorder();
+      return this.root = buildTree(updatedValuesArray);
+    },
   };
 };
 
-function buildTree(arr) {
-  // Remove duplicate values and sort them
-  const cleanData = [...new Set(arr)];
-  const sortedDatas = sortedArray(cleanData);
-  // Base case
-  if (sortedDatas.length === 0) {
-    return null;
+
+
+/* TEST DATA ----------------------------------------------------------------------------------------------*/
+
+function randomArray(n, upperLimit) {
+  let array = [];
+  for (let i = 0; i < n; i++) {
+    array.push(Math.floor(Math.random() * upperLimit));
   }
-  // Recursion
-  const mid = Math.floor(sortedDatas.length / 2);
-  const newNode = Node(sortedDatas[mid]);
-  newNode.left = buildTree(sortedDatas.slice(0, mid));
-  newNode.right = buildTree(sortedDatas.slice(mid + 1));
-  return newNode;
+  return array;
 }
 
-/* ----------------------------------------------------------------------------------------------*/
-
-let testArray = [10,20,50,30,40,80,70,60,90,42];
-let shortTree = Tree([1,2,3]);
+let testArray = randomArray(50, 100);
 let testTree = Tree(testArray);
 
 
@@ -185,7 +211,7 @@ const prettyPrint = (node, prefix = '', isLeft = true) => {
   if (node.right !== null) {
     prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
   }
-  console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.data}`);
+  console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.value}`);
   if (node.left !== null) {
     prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
   }
