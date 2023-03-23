@@ -72,6 +72,86 @@ const Tree = (arr) => {
       }
       return currentNode;
     },
+
+    levelOrder(valuesArray = [], queue = [], currentNode = this.root) {
+      if (currentNode === null) return;
+      // Visit the root
+      valuesArray.push(currentNode.value);
+
+      // Traverse to left and right children -> add to queue
+      queue.push(currentNode.left);
+      queue.push(currentNode.right);
+
+      // Move to next level
+      while (queue.length) {
+        const level = queue[0];
+        queue.shift();
+        this.levelOrder(valuesArray, queue, level);
+      }
+
+      return valuesArray;
+    },
+
+    inorder(valuesArray = [], currentNode = this.root) {
+      // Base case
+      if (currentNode === null) return;
+      // Recursive call on left node if it exists
+      this.inorder(valuesArray, currentNode.left);
+      // Log value when left node === null
+      valuesArray.push(currentNode.value);
+      // Recursive call on right node after left nodes are visited
+      this.inorder(valuesArray, currentNode.right);
+      return valuesArray;
+    },
+
+    preorder(valuesArray = [], currentNode = this.root) {
+      // Base case
+      if (currentNode === null) return;
+      // Log value of root node
+      valuesArray.push(currentNode.value);
+      // Go to left child then right child
+      this.preorder(valuesArray, currentNode.left);
+      this.preorder(valuesArray, currentNode.right);
+
+      return valuesArray;
+    },
+
+    postorder(valuesArray = [], currentNode = this.root) {
+      // Base case
+      if (currentNode === null) return;
+      this.postorder(valuesArray, currentNode.left);
+      this.postorder(valuesArray, currentNode.right);
+      valuesArray.push(currentNode.value);
+      return valuesArray;
+    },
+
+    height(currentNode = this.root) {
+      if (currentNode === null) return 0;
+
+      let leftHeight = this.height(currentNode.left);
+      let rightHeight = this.height(currentNode.right);
+
+      if (leftHeight > rightHeight) {
+        return leftHeight + 1;
+      } else {
+        return rightHeight + 1;
+      }
+    },
+
+    depth(targetNode, currentNode = this.root, depth = 0) {
+      if (currentNode === null) return;
+      if (targetNode === currentNode) return depth;
+
+      if (targetNode.value < currentNode.value) {
+        depth++;
+        currentNode = currentNode.left;
+        return this.depth(targetNode, currentNode, depth);
+      } else if (targetNode.value > currentNode.value) {
+        depth++;
+        currentNode = currentNode.right;
+        return this.depth(targetNode, currentNode, depth);
+      }
+    },
   };
 };
 
@@ -93,7 +173,7 @@ function buildTree(arr) {
 
 /* ----------------------------------------------------------------------------------------------*/
 
-let testArray = [1,2,5,3,4,8,7,6,9,42];
+let testArray = [10,20,50,30,40,80,70,60,90,42];
 let shortTree = Tree([1,2,3]);
 let testTree = Tree(testArray);
 
