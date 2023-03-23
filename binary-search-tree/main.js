@@ -185,6 +185,19 @@ const Tree = (arr) => {
       let updatedValuesArray = this.inorder();
       return this.root = buildTree(updatedValuesArray);
     },
+
+    print(node = this.root, prefix = '', isLeft = true) {
+      if (node === null) {
+         return;
+      }
+      if (node.right !== null) {
+        prettyPrint(node.right, `${prefix}${isLeft ? '│   ' : '    '}`, false);
+      }
+      console.log(`${prefix}${isLeft ? '└── ' : '┌── '}${node.value}`);
+      if (node.left !== null) {
+        prettyPrint(node.left, `${prefix}${isLeft ? '    ' : '│   '}`, true);
+      }
+    },
   };
 };
 
