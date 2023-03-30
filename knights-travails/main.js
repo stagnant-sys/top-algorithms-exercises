@@ -5,23 +5,27 @@ const Node = (root, possibleMoves) => {
   };
 };
 
-function buildTree(root) {
+function buildTree(root, endPos) {
+  if (root[0] === endPos[0] && root[1] === endPos[1]) {
+    return null;
+  }
+  // Try all moves and keep the legal ones in an array
   const moves = [move([-2, 1], root),move([-1, 2], root),move([1, 2], root),move([2, 1], root),move([-2, -1], root),move([-1, -2], root),move([1, -2], root),move([2, -1], root)];
-  const rootNode = Node(root);
   let legalMovesArray = [];
   moves.forEach(el => {
     if (el === null) return;
     legalMovesArray.push(el);
   });
-  rootNode.possibleMoves = legalMovesArray;
+  
+  let rootNode = Node(root, legalMovesArray);
+  rootNode.possibleMoves.forEach((o, i, a) => a[i] = buildTree(a[i]));
   return rootNode;
-
-  /*moves.forEach(el => {
-    if (el === null) return;
-    const newNode = Node(el);
-    newNode.possibleMoves = [move([-2, 1], el),move([-1, 2], el),move([1, 2], el),move([2, 1], el),move([-2, -1], el),move([-1, -2], el),move([1, -2], el),move([2, -1], el)];
-    return newNode;
-  })*;*/
+  
+  /*rootNode.possibleMoves.forEach((o, i, a) => a[i] = buildTree(a[i]));
+  return rootNode;*/
+  /*for (let i = 0; i < rootNode.possibleMoves.length; i++) {
+    rootNode.possibleMoves[i] = buildTree(rootNode.possibleMoves[i]);
+  }*/
 }
 
 const board = [
@@ -47,7 +51,7 @@ function move (arr, currentPosition) {
 }
 
 
-let testNode = buildTree([0,0]);
+let testNode = buildTree([0,0], [4,7]);
 
 /*
 possibleMoves['LU'], possibleMoves['UL'], possibleMoves['UR'], possibleMoves['RU'], possibleMoves['LD'], possibleMoves['DL'], possibleMoves['DR'], possibleMoves['RD']
